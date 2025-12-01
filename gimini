@@ -17,6 +17,8 @@ added 219 packages, and audited 220 packages in 5m
   run `npm fund` for details
 
 1 moderate severity vulnerability
+npm install @prisma/client
+npx prisma generate
 
 To address all issues, run:
   npm audit fix
