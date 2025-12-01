@@ -1,3 +1,4 @@
+import 'dotenv/config';
 console.log('🔑 RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
 console.log('🌐 NODE_ENV:', process.env.NODE_ENV); import express from 'express';
 import cors from 'cors';
