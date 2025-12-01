@@ -1,1 +1,9 @@
-npx prisma db push
+
+[INFO] 17:49:33 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.2)
+🔑 RESEND_API_KEY exists: true
+🌐 NODE_ENV: development
+Server running on port 4000
+✅ Verification email sent to alaa@zayood.com
+✅ Verification email sent to alaazayood@gmail.com
+
+Not found - /api/auth/verify
