@@ -1,18 +1,67 @@
-PS P:\Xzoria\pfs-portal\powerflow-studio-portal\backend> npm install @prisma/client
+PS C:\powerflow-studio-portal> cd backend                      
+PS C:\powerflow-studio-portal\backend> npm run dev             
 
-up to date, audited 220 packages in 3s
+> backend@1.0.0 dev
+> ts-node-dev -r dotenv/config --respawn --transpile-only --exit-chil0.9.2, typescript ver. 5.9.2)
+🔑 RESEND_API_KEY exists: true
+🌐 NODE_ENV: development
+Server running on port 4000
+🔴 Register Error: PrismaClientKnownRequestError: 
+Invalid `tx.user.findUnique()` invocation in
+C:\powerflow-studio-portal\backend\src\controllers\authController.ts:41:42
 
-29 packages are looking for funding
-  run `npm fund` for details
+  38 const normalizedEmail = email.toLowerCase();
+  39
+  40 // 1. Check if user exists
+→ 41 const existingUser = await tx.user.findUnique(
+The column `pfs.users.last_verification_sent` does not exist in the current database.       
+    at $n.handleRequestError (C:\powerflow-studio-portal\backend\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\powerflow-studio-portal\backend\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\powerflow-studio-portal\backend\node_modules\@prisma\client\runtime\library.js:121:6307)     
+    at l (C:\powerflow-studio-portal\backend\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at C:\powerflow-studio-portal\backend\src\controllers\authController.ts::35:20) {
+:35:20) {
+  code: 'P2022',
+  clientVersion: '5.22.0',
+  meta: { modelName: 'User', cploy      # أو: npx prisma migrate dev --name initnpx prisma migrate deploy      # أو: npx prisma migrate dev --name init         
+Oops, something went wrong.  Please report this bug with the details below.     
+Report on GitHub: https://github.com/PowerShell/PSReadLine/issues/new 
+### Environment     
+PSReadLine: 2.0.0   
+PowerShell: 5.1.26100.7019    
+OS: Microsoft Windows 10.0.26100        
+Last 184 Keys       
+```       
+ UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow DownArrow Enter      
+ UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow UpArrow Escape ى ح ة Spacebar Backspace Backspace Backspace Backspace n p m Spacebar r u n Spacebar d e v Enter      
+ Ctrl+ر Backspace n p x Spacebar p r i s m a Spacebar m i g r a t e Spacebar d e p l o y Spacebar Spacebar Spacebar Spacebar Spacebar Spacebar # Spacebar أ و : Spacebar n p x Spacebar p r i s m a Spacebar m i g r a t e Spacebar d e v Spacebar - - n a m e Spacebar i n i t n p x Spacebar p r i s m a Spacebar m i g r a t e Spacebar d e p l o y Spacebar Spacebar Spacebar Spacebar Spacebar Spacebar # Spacebar أ و : Spacebar n p x Spacebar p r i s m a Spacebar m i g r a t e Spacebar d e v Spacebar - - n a m e Spacebar i n i t Escape        
+```       
 
-1 moderate severity vulnerability
+### Exception       
+```       
+System.ArgumentOutOfRangeException: The value must be greater than or equal to zero and less than the console's buffer size in that dimension.        
+Parameter name: top 
+Actual value was 13.
+   at System.Console.SetCursorPosition(Int32 left, Int32 top)
+   at Microsoft.PowerShell.PSConsoleReadLine.ReallyRender(RenderData renderData, String defaultColor)
+   at Microsoft.PowerShell.PSConsoleReadLine.ForceRender()  
+   at Microsoft.PowerShell.PSConsoleReadLine.ProcessOneKey(PSKeyInfo key, Dictionary`2 dispatchTable, Boolean ignoreIfNoAction, Object arg) 
+   at Microsoft.PowerShell.PSConsoleReadLine.InputLoop()    
+   at Microsoft.PowerShell.PSConsoleReadLine.ReadLine(Runspace runspace, EngineIntrinsics engineIntrinsics, CancellationToken cancellationToken)      
+```       
 
-To address all issues, run:
-  npm audit fix
+PS C:\powerflow-studio-portal\backend>nnpx prisma migrate deploy      
+Environment variables loaded from .env  
+Prisma schema loaded from prisma\schema.prisma    
+Datasource "db": MySQL database "pfs" at "localhost:3306"   
+eline an existing production database: https://pris.ly/d/migrate-baseline
 
-Run `npm audit` for details.
-PS P:\Xzoria\pfs-portal\powerflow-studio-portal\backend> npx prisma generate
+PS C:\pownpx prisma migrate resolve --applied 0_init
 Environment variables loaded from .env
 Prisma schema loaded from prisma\schema.prisma
-Error: UNKNOWN: unknown error, realpath 'P:\Xzoria\pfs-portal\powerflow-studio-portal\backend\node_modules\@prisma\client'
-PS P:\Xzoria\pfs-portal\powerflow-studio-portal\backend> 
+Datasource "db": MySQL database "pfs" at "localhost:3306"
+Error: P3017
+
+The migration 0_init could not be found. Please make sure that the migration exists, and that you included the whole name of the directory. (example: "20201207184859_initial_migration")
+
+PS C:\powerflow-studio-portal\backend> 
