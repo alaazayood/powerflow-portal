@@ -1,51 +1,9 @@
-PS C:\powerflow-studio-portal> git fetch --all
-remote: Enumerating objects: 69, done.
-remote: Counting objects: 100% (69/69), done.
-remote: Compressing objects: 100% (14/14), done.
-remote: Total 39 (delta 24), reused 39 (delta 24), pack-reused 0 (from 0)
-Unpacking objects: 100% (39/39), 20.69 KiB | 225.00 KiB/s, done.
-From https://github.com/alaazayood/powerflow-portal
-   28cbbb4..dba8a59  master     -> origin/master
-PS C:\powerflow-studio-portal> git reset --hard -origin/master
-error: unknown switch `o'
-usage: git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]
-   or: git reset [-q] [<tree-ish>] [--] <pathspec>...
-   or: git reset [-q] [--pathspec-from-file [--pathspec-file-nul]] [<tree-ish>]
-   or: git reset --patch [<tree-ish>] [--] [<pathspec>...]
-   or: DEPRECATED: git reset [-q] [--stdin [-z]] [<tree-ish>]
+git fetch --all (لجلب التحديثات).
+git reset --hard origin/master (لإجبار الكود على التطابق مع نسختنا النظيفة وحذف أي تغييرات سابقة).
+git pull (للتأكيد).
+بعد تنفيذ هذه الأوامر، سيصبح الكود هناك مطابقاً للكود هنا. ثم لا تنسَ تشغيل أوامر التحديث (Build) كما في ملف REMOTE_SETUP.md الذي سيظهر لك هناك:
 
-    -q, --[no-]quiet      be quiet, only report errors
-    --no-refresh          skip refreshing the index after reset
-    --refresh             opposite of --no-refresh
-    --mixed               reset HEAD and index
-    --soft                reset only HEAD
-    --hard                reset HEAD, index and working tree
-    --merge               reset HEAD, index and working tree
-    --keep                reset HEAD but keep local changes
-    --[no-]recurse-submodules[=<reset>]
-                          control recursive updating of submodules
-    -p, --[no-]patch      select hunks interactively
-    -U, --unified <n>     generate diffs with <n> lines context
-    --inter-hunk-context <n>
-                          show context between diff hunks up to the specified number of lines
-    -N, --[no-]intent-to-add
-                          record only the fact that removed paths will be added later
-    --[no-]pathspec-from-file <file>
-                          read pathspec from file
-    --[no-]pathspec-file-nul
-                          with --pathspec-from-file, pathspec elements are separated with NUL character
-    -z                    DEPRECATED (use --pathspec-file-nul instead): paths are separated with NUL character
-    --[no-]stdin          DEPRECATED (use --pathspec-from-file=- instead): read paths from <stdin>
+Backend: npm install -> npx prisma generate -> npm run build -> pm2 restart all
+Frontend: npm install -> npm run build
+توكل على الله! 🚀
 
-PS C:\powerflow-studio-portal> git pull
-There is no tracking information for the current branch.
-Please specify which branch you want to merge with.
-See git-pull(1) for details.
-
-    git pull <remote> <branch>
-
-If you wish to set tracking information for this branch you can do so with:
-
-    git branch --set-upstream-to=origin/<branch> blackboxai/fix-signup-transactional-safety
-
-PS C:\powerflow-studio-portal> 
