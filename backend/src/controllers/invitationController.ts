@@ -32,25 +32,54 @@ export const inviteUser = async (req: Request, res: Response) => {
         }
 
         // 2. Check if pending invitation exists
-        // We generate a new token regardless to allow re-inviting
-        const token = uuidv4();
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
-
-        // 3. Create Invitation Record
-        const invitation = await prisma.invitation.create({
-            data: {
+        const existingInvitation = await prisma.invitation.findFirst({
+            where: {
                 email,
-                token,
-                inviterId,
                 customerId,
-                expiresAt,
                 status: 'PENDING'
             }
         });
 
+        const token = uuidv4();
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+
+        let invitation;
+
+        if (existingInvitation) {
+            // ♻️ Update existing invitation
+            invitation = await prisma.invitation.update({
+                where: { id: existingInvitation.id },
+                data: {
+                    token,
+                    expiresAt,
+                    inviterId // Update inviter if different
+                }
+            });
+        } else {
+            // 🆕 Create new invitation
+            invitation = await prisma.invitation.create({
+                data: {
+                    email,
+                    token,
+                    inviterId,
+                    customerId,
+                    expiresAt,
+                    status: 'PENDING'
+                }
+            });
+        }
+
         // 4. Send Email
         const inviteLink = `http://localhost:3000/accept-invite?token=${token}`;
+
+        // 🔧 Developer Helper: Log invite link in dev mode
+        if (process.env.NODE_ENV === 'development') {
+            console.log('\n=================================================');
+            console.log(`📨 INVITE LINK for ${email}:`);
+            console.log(inviteLink);
+            console.log('=================================================\n');
+        }
 
         try {
             await resend.emails.send({
@@ -72,13 +101,18 @@ export const inviteUser = async (req: Request, res: Response) => {
             console.log(`✅ Invite email sent to ${email}`);
         } catch (emailError) {
             console.error('Failed to send email:', emailError);
-            // Don't fail the request, just log it. The token is created.
+            // We don't delete the invitation here because the user can just "Resend" later (which will now update the token).
+            // But we should probably warn the frontend.
+            // For now, we return success but maybe with a warning note if we wanted to be strict.
+            // Given the "Smart Overwrite" philosophy, keeping the record is fine as long as we can retry.
         }
 
         res.status(201).json({
             success: true,
             message: `Invitation sent to ${email}`,
-            invitationId: invitation.id
+            invitationId: invitation.id,
+            // 🔧 Developer Helper
+            inviteLink: process.env.NODE_ENV === 'development' ? inviteLink : undefined
         });
 
     } catch (error) {

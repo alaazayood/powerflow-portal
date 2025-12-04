@@ -43,6 +43,43 @@ const register = async (req: Request, res: Response) => {
       });
 
       if (existingUser) {
+        // ✅ Smart Overwrite: If user exists but is NOT verified, allow overwriting
+        if (!existingUser.isVerified) {
+          // Update logic will go here in a real implementation, but for now we can just throw error or handle it.
+          // To keep it simple and safe as per user request:
+          // We will update the existing unverified user with new details.
+
+          const passwordHash = await bcrypt.hash(password, 12);
+          const verificationCode = generateVerificationCode();
+          const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+          // Update User
+          const user = await tx.user.update({
+            where: { email: normalizedEmail },
+            data: {
+              passwordHash,
+              firstName: first_name,
+              lastName: last_name,
+              verificationCode,
+              verificationExpires: expiresAt,
+              verificationAttempts: 0
+            }
+          });
+
+          // Update Customer (Optional, but good for consistency)
+          await tx.customer.update({
+            where: { id: user.customerId },
+            data: {
+              firstName: first_name,
+              lastName: last_name,
+              phone: phone || null,
+              companyName: (customer_type === 'company' && company_name) ? company_name : null,
+            }
+          });
+
+          return { user, verificationCode, normalizedEmail };
+        }
+
         throw new ApiError(409, 'User already exists');
       }
 
@@ -89,15 +126,24 @@ const register = async (req: Request, res: Response) => {
       return { user, verificationCode, normalizedEmail };
     });
 
-    // 7. Send Email (Outside transaction to avoid rollback on email fail if desired, but here we keep logic same)
-    // In original code, it was inside try/catch block of transaction wrapper.
-    await sendVerificationCode(result.normalizedEmail, result.verificationCode);
+    // 7. Send Email
+    try {
+      await sendVerificationCode(result.normalizedEmail, result.verificationCode);
+    } catch (emailError) {
+      console.error('❌ Failed to send verification email.');
+      // We do NOT delete the user here anymore, because we support "Smart Overwrite".
+      // If email fails, the user remains "Unverified".
+      // The user can simply try registering again, and the "Smart Overwrite" logic above will catch it and retry.
+      throw new ApiError(500, 'Failed to send verification email. Please try again.');
+    }
 
     res.json({
       success: true,
       message: 'Registration successful. Please check your email for verification code.',
       email: result.normalizedEmail,
-      next_step: 'verification'
+      next_step: 'verification',
+      // 🔧 Developer Helper: Return code directly in dev mode
+      verificationCode: process.env.NODE_ENV === 'development' ? result.verificationCode : undefined
     });
 
   } catch (error) {
@@ -224,4 +270,31 @@ const changePassword = async (req: Request, res: Response) => {
   }
 };
 
-export { register, login, changePassword };
+const getProfile = async (req: Request, res: Response) => {
+  const user = (req as any).user;
+
+  // Fetch full user details including company name if needed
+  const fullUser = await prisma.user.findUnique({
+    where: { id: user.user_id },
+    include: { customer: true }
+  });
+
+  if (!fullUser) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  res.json({
+    success: true,
+    user: {
+      id: fullUser.id,
+      email: fullUser.email,
+      first_name: fullUser.firstName,
+      last_name: fullUser.lastName,
+      role: fullUser.role.toLowerCase(),
+      customer_id: fullUser.customerId,
+      company_name: fullUser.customer.companyName
+    }
+  });
+};
+
+export { register, login, changePassword, getProfile };

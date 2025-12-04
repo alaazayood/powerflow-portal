@@ -1,10 +1,10 @@
-// backend/src/utils/verification.ts - الملف الكامل
+// backend/src/utils/verification.ts
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const generateVerificationCode = (): string => {
-  return Math.floor(1000 + Math.random() * 9000).toString(); // 4 خانات عشوائية
+  return Math.floor(1000 + Math.random() * 9000).toString(); // 4 random digits
 };
 
 export const isVerificationCodeExpired = (expiresAt: Date): boolean => {
@@ -12,6 +12,13 @@ export const isVerificationCodeExpired = (expiresAt: Date): boolean => {
 };
 
 export const sendVerificationCode = async (email: string, code: string): Promise<void> => {
+  // 🔧 Developer Helper: Always log code in dev mode
+  if (process.env.NODE_ENV === 'development') {
+    console.log('\n=================================================');
+    console.log(`🔐 VERIFICATION CODE for ${email}: ${code}`);
+    console.log('=================================================\n');
+  }
+
   try {
     await resend.emails.send({
       from: 'PowerFlow <onboarding@resend.dev>',
@@ -34,14 +41,16 @@ export const sendVerificationCode = async (email: string, code: string): Promise
     console.log(`✅ Verification email sent to ${email}`);
   } catch (error: any) {
     console.error('❌ Resend error:', error.message);
-    // نسخة احتياطية
-    console.log(`📧 [BACKUP] Verification code for ${email}: ${code}`);
+    // Backup log is redundant now if we log at the start, but keeping it for production fallback
+    if (process.env.NODE_ENV !== 'development') {
+      console.log(`📧 [BACKUP] Verification code for ${email}: ${code}`);
+    }
   }
 };
 
 export const validateVerificationCode = (
-  inputCode: string, 
-  storedCode: string, 
+  inputCode: string,
+  storedCode: string,
   expiresAt: Date
 ): boolean => {
   return inputCode === storedCode && !isVerificationCodeExpired(expiresAt);

@@ -1,66 +1,52 @@
-# إعداد المشروع على السيرفر البعيد (Remote Desktop)
+# Remote Server Deployment Guide
 
-هذا الملف يحتوي على الخطوات الدقيقة لتشغيل المشروع على الجهاز الجديد.
+Since you cannot copy-paste easily, here are the short, exact commands to run on the Remote Desktop.
 
-## 1. سحب المشروع (Clone)
-افتح التيرمينال (PowerShell) في المجلد الذي تريد وضع المشروع فيه ونفذ:
+## Phase 1: Update Code (Force Sync)
+Open PowerShell and run these commands one by one:
 
-```powershell
-git clone https://github.com/alaazayood/powerflow-portal.git .
-```
-
----
-
-## 2. إعداد الباك اند (Backend)
-```powershell
-cd backend
-
-# 1. تثبيت المكتبات
-npm install
-
-# 2. بناء ملفات بريزما (هام جداً لحل مشاكل قاعدة البيانات)
-npx prisma generate
-
-# 3. إعداد ملف البيئة
-# ملف .env موجود الآن ضمن الملفات، فقط قم بتعديل رابط قاعدة البيانات إذا لزم الأمر
-# nano .env
-```
-
----
-
-## 3. إعداد الفرونت اند (Frontend)
-افتح تيرمينال جديد (أو عد للمجلد الرئيسي `cd ..`) ثم:
-
-```powershell
-cd frontend
-
-# 1. تثبيت المكتبات
-npm install
-
-# 2. تشغيل المشروع للتجربة
-npm start
-```
-
----
-
-## 🔴 حل المشاكل (Troubleshooting)
-
-### مشكلة: خطأ في نسخة Prisma أو "Old Version"
-إذا ظهر لك خطأ عند تشغيل `npx prisma generate` يقول أن النسخة قديمة أو فشل التثبيت، نفذ هذه الخطوات "السحرية" بالترتيب لتنظيف كل شيء والبدء من جديد:
-
-1.  **تأكد من نسخة Node.js:**
-    اكتب `node -v` في التيرمينال. يجب أن يكون الرقم 18 أو أعلى (مثلاً `v18.16.0`). إذا كان أقل (مثل `v14` أو `v16`) يجب تحديث Node.js أولاً من الموقع الرسمي.
-
-2.  **تنظيف التثبيت (Backend):**
-    نفذ هذه الأوامر وأنت داخل مجلد `backend`:
+1.  Go to project folder:
     ```powershell
-    # حذف مجلد المكتبات وملف القفل القديم
-    Remove-Item -Path node_modules -Recurse -Force
-    Remove-Item -Path package-lock.json -Force
-
-    # تثبيت نظيف من الصفر
-    npm install
-
-    # محاولة بناء بريزما مرة أخرى
-    npx prisma generate
+    cd C:\Users\Administrator\Desktop\powerflow-portal
     ```
+
+2.  **CRITICAL STEP:** Force the code to match your local computer (deletes "Blackbox" changes):
+    ```powershell
+    git fetch --all
+    git reset --hard origin/master
+    git pull
+    ```
+
+## Phase 2: Update Backend
+3.  Update Backend dependencies and database:
+    ```powershell
+    cd backend
+    npm install
+    npx prisma generate
+    npm run build
+    ```
+
+4.  Restart Backend Server:
+    ```powershell
+    pm2 restart all
+    ```
+    *(If pm2 is not installed, use: `npm run start`)*
+
+## Phase 3: Update Frontend
+5.  Build the new Frontend:
+    ```powershell
+    cd ../frontend
+    npm install
+    npm run build
+    ```
+
+## Phase 4: Verify
+6.  Open the site in the browser and check:
+    - Login
+    - Dashboard (Dark Theme)
+    - Profile Page
+    - Settings Page
+
+## Troubleshooting
+- If you get "Permission denied" errors, close any open VS Code windows or Node processes on the remote server.
+- If `git pull` fails, run `git reset --hard origin/master` again.

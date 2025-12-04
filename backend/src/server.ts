@@ -8,22 +8,25 @@ import adminRouter from './routes/admin';
 import verificationRouter from './routes/verification';
 import licenseRouter from './routes/license';
 import invitationRouter from './routes/invitation';
+import dashboardRouter from './routes/dashboard'; // Import
+import helmet from 'helmet'; // Added import
+import morgan from 'morgan'; // Added import
 
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true
-}));
+app.use(helmet()); // Added middleware
+app.use(cors()); // Modified cors
 app.use(express.json());
+app.use(morgan('dev')); // Added middleware
 
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
-app.use('/api/verify', verificationRouter);
-app.use('/api/v1/license', licenseRouter);
+app.use('/api/auth', verificationRouter); // Mount verification routes under /api/auth
+app.use('/api/licenses', licenseRouter); // Changed path
 app.use('/api/invitations', invitationRouter);
+app.use('/api/dashboard', dashboardRouter); // Mount dashboard routes
 app.use(notFound);
 app.use(errorHandler);
 app.listen(4000, () => {

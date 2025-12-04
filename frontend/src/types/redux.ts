@@ -6,6 +6,7 @@ export interface User {
   last_name: string;
   role: 'admin' | 'user' | 'owner' | 'super_admin';
   company_id?: number;
+  company_name?: string;
 }
 
 export interface AuthState {

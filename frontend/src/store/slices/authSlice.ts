@@ -1,7 +1,7 @@
-// frontend/src/store/slices/authSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthState } from '../../types/redux';
 import { login as loginApi } from '../../services/auth';
+import api from '../../services/api';
 
 const initialState: AuthState = {
   user: null,
@@ -23,6 +23,18 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const fetchCurrentUser = createAsyncThunk(
+  'auth/fetchCurrentUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/auth/profile');
+      return response.data.user;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -37,7 +49,6 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // 🔧 إضافة هذا الـ action الجديد
     loginSuccess: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -61,6 +72,17 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      // Handle fetchCurrentUser
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(fetchCurrentUser.rejected, (state) => {
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem('token');
       });
   },
 });
