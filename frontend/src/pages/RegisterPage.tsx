@@ -31,8 +31,8 @@ const RegisterPage: React.FC = () => {
         sx={{ 
           p: 4, 
           width: '100%',
-          background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-          border: '1px solid #e2e8f0'
+
+
         }}
       >
         {/* Header with Logo Placeholder */}

@@ -114,7 +114,6 @@ const handleSubmit = async (e: React.FormEvent) => {
       // Validate using yup schema
       await registerSchema.validate(formData, { abortEarly: false });
 
-      // 🔥 البيانات المصححة
       const registrationData = {
         email: formData.mgrEmail,
         password: formData.password,
@@ -135,7 +134,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   navigate(`/verify?email=${encodeURIComponent(formData.mgrEmail)}&password=${encodeURIComponent(formData.password)}`);
 }, 2000);
     } catch (err: any) {
-      // 🔥 أضف معالجة الأخطاء
       if (err.inner) {
         const errors: FieldErrors = {};
         err.inner.forEach((e: any) => {
@@ -419,7 +417,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       </Card>
 
       {/* Administrator Account */}
-      <Card sx={{ mb: 4, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
+      <Card sx={{ mb: 4, border: '1px solid', borderColor: 'divider', borderRadius: 3 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h6" sx={{ mb: 2, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
             <Security color="secondary" /> Administrator Account
