@@ -54,8 +54,11 @@ export const purchaseLicense = async (req: Request, res: Response) => {
     expiryDate.setFullYear(expiryDate.getFullYear() + yearsToAdd);
 
     // 4. Generate Licenses (Seats)
-    // We create one row per seat, sharing the same "Group" logic if needed, 
-    // but for legacy compatibility, each seat is a row in 'licenses' table.
+    const lastLicense = await prisma.license.findFirst({
+      where: { customerId: user.customerId },
+      orderBy: { seatNumber: 'desc' }
+    });
+    const startSeat = (lastLicense?.seatNumber || 0) + 1;
 
     const createdLicenses: any[] = [];
 
@@ -69,7 +72,7 @@ export const purchaseLicense = async (req: Request, res: Response) => {
             customerId: user.customerId,
             key: licenseKey,           // Maps to license_hash
             type: planType,            // Maps to license_type
-            seatNumber: i,             // Maps to seat_number
+            seatNumber: startSeat + i - 1, // Continuously incrementing seat numbers
             expiryDate: expiryDate,    // Maps to expiration_date
             issueDate: issueDate,      // Maps to issue_date
             isFree: 0,                 // Maps to is_free
@@ -173,7 +176,7 @@ export const getAllLicenses = async (req: Request, res: Response) => {
 
     const licenses = await prisma.license.findMany({
       where: { customerId: customerId },
-      orderBy: { issueDate: 'desc' }
+      orderBy: { seatNumber: 'asc' }
     });
 
     res.json({

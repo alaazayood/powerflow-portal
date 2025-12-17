@@ -231,7 +231,7 @@ const LicensesPage: React.FC = () => {
             >
               <MenuItem value="yearly">Yearly License</MenuItem>
               <MenuItem value="3years">3 Years License</MenuItem>
-              <MenuItem value="floating">Floating License</MenuItem>
+              {/* <MenuItem value="floating">Floating License</MenuItem> */}
             </TextField>
             <TextField
               fullWidth

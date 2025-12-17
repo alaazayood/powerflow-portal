@@ -104,7 +104,36 @@ const UnifiedRegisterForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
     if (touchedFields.has(name)) validateField(name, value);
   };
-const handleSubmit = async (e: React.FormEvent) => {
+  // Smart Auto-fill: If Admin Name matches Customer Name, copy details
+  React.useEffect(() => {
+    if (!formData.first_name || !formData.last_name || !formData.mgrFirst || !formData.mgrLast) return;
+
+    const namesMatch =
+      formData.mgrFirst.trim().toLowerCase() === formData.first_name.trim().toLowerCase() &&
+      formData.mgrLast.trim().toLowerCase() === formData.last_name.trim().toLowerCase();
+
+    if (namesMatch) {
+      setFormData(prev => ({
+        ...prev,
+        mgrPhone: prev.mgrPhone || formData.customer_phone,
+        mgr_street: prev.mgr_street || formData.cust_street,
+        mgr_building: prev.mgr_building || formData.cust_building,
+        mgr_post: prev.mgr_post || formData.cust_post,
+        mgr_city: prev.mgr_city || formData.cust_city,
+        mgr_state: prev.mgr_state || formData.cust_state,
+        mgr_country: prev.mgr_country || formData.cust_country,
+      }));
+    }
+  }, [
+    formData.mgrFirst, formData.mgrLast, 
+    formData.first_name, formData.last_name,
+    formData.customer_phone, formData.cust_street, 
+    formData.cust_building, formData.cust_post, 
+    formData.cust_city, formData.cust_state, 
+    formData.cust_country
+  ]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
