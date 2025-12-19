@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+// Updated dashboard types to fix compilation issue
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import api from '../services/api';
@@ -42,8 +43,8 @@ const Dashboard: React.FC = () => {
   const isAdmin = ['admin', 'owner', 'super_admin'].includes(user?.role || '');
   
   return isAdmin 
-    ? <AdminDashboard stats={stats} setView={setView} />
-    : <UserDashboard stats={stats} setView={setView} />;
+    ? <AdminDashboard stats={stats} setView={setView} userName={user?.first_name} />
+    : <UserDashboard stats={stats} setView={setView} userName={user?.first_name} />;
 };
 
 export default Dashboard;

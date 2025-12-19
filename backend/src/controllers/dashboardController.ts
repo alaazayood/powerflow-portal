@@ -23,8 +23,8 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             l => l.isActive && new Date(l.expiryDate) > now
         );
 
-        // Total Seats: Sum of seatNumber from all active licenses
-        const totalSeats = activeLicenses.reduce((sum, l) => sum + l.seatNumber, 0);
+        // Total Seats: In this business model, each valid key is considered a seat
+        const totalSeats = activeLicenses.length;
 
         // Seats Used: 
         // Logic: If pcUuid is present, it counts as used. 

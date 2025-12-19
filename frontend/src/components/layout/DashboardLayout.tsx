@@ -73,6 +73,7 @@ const DashboardLayout: React.FC = () => {
       ? [{ id: 'team', path: '/team', label: 'Team Members', icon: <PeopleIcon /> }] 
       : [] 
     ),
+    { id: 'profile', path: '/profile', label: 'My Profile', icon: <PersonIcon /> },
     { id: 'settings', path: '/settings', label: 'Settings', icon: <SettingsIcon /> },
   ];
 

@@ -104,8 +104,26 @@ const UnifiedRegisterForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
     if (touchedFields.has(name)) validateField(name, value);
   };
-  // Smart Auto-fill: If Admin Name matches Customer Name, copy details
+  // Smart Auto-fill & Mirror Sync
   React.useEffect(() => {
+    // 🧠 Intelligence: If Individual account, mirror fields in real-time
+    if (!isCompany) {
+      setFormData(prev => ({
+        ...prev,
+        mgrFirst: prev.first_name,
+        mgrLast: prev.last_name,
+        mgrPhone: prev.customer_phone,
+        mgr_street: prev.cust_street,
+        mgr_building: prev.cust_building,
+        mgr_post: prev.cust_post,
+        mgr_city: prev.cust_city,
+        mgr_state: prev.cust_state,
+        mgr_country: prev.cust_country,
+      }));
+      return;
+    }
+
+    // 🏢 Company Logic: Only sync if names explicitly match (as requested for companies)
     if (!formData.first_name || !formData.last_name || !formData.mgrFirst || !formData.mgrLast) return;
 
     const namesMatch =
@@ -125,12 +143,14 @@ const UnifiedRegisterForm: React.FC = () => {
       }));
     }
   }, [
-    formData.mgrFirst, formData.mgrLast, 
+    isCompany,
     formData.first_name, formData.last_name,
     formData.customer_phone, formData.cust_street, 
     formData.cust_building, formData.cust_post, 
     formData.cust_city, formData.cust_state, 
-    formData.cust_country
+    formData.cust_country,
+    // Note: We don't include mgr fields for Individuals to avoid infinite loops during mirroring
+    ...(isCompany ? [formData.mgrFirst, formData.mgrLast] : [])
   ]);
 
   const handleSubmit = async (e: React.FormEvent) => {

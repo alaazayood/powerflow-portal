@@ -27,9 +27,10 @@ interface DashboardStats {
   customerName: string;
 }
 
-interface AdminDashboardProps {
-  stats: DashboardStats | null;
+export interface AdminDashboardProps {
+  stats: any | null; // Keep stats as any or same structure
   setView: (view: 'overview' | 'licenses' | 'team' | 'settings') => void;
+  userName?: string;
 }
 
 const StatCard = ({ title, value, subtext, icon, color }: any) => {
@@ -70,7 +71,7 @@ const StatCard = ({ title, value, subtext, icon, color }: any) => {
       </Box>
       
       {subtext && (
-        <Typography variant="body2" color="text.secondary" sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ position: 'relative', zIndex: 1, fontSize: '0.85rem' }}>
           {subtext}
         </Typography>
       )}
@@ -78,21 +79,24 @@ const StatCard = ({ title, value, subtext, icon, color }: any) => {
   );
 };
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, setView }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, setView, userName }) => {
   const theme = useTheme();
+
+  // Map 3years to "Three Years" for display
+  const planDisplay = stats?.planName?.toLowerCase() === '3years' ? 'Three Years' : (stats?.planName || 'Free Plan');
 
   return (
     <Stack spacing={4}>
       {/* Welcome Banner */}
       <Box>
         <Typography variant="h4" gutterBottom fontWeight="800">
-          Welcome back, <Box component="span" sx={{ color: 'primary.main' }}>{stats?.customerName || 'Admin'}</Box>
+          Welcome back, <Box component="span" sx={{ color: 'primary.main' }}>{userName || 'Admin'}</Box>
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Here's what's happening with your organization today.
         </Typography>
       </Box>
-
+      
       {/* Stats Cards */}
       <Box sx={{ 
         display: 'grid', 
@@ -104,7 +108,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, setView }) => {
           value={stats?.activeLicenses || 0} 
           icon={<LicenseIcon />} 
           color={theme.palette.primary.main}
-          subtext="Valid keys currently in use"
+          subtext="Valid keys"
         />
         
         <StatCard 
@@ -117,7 +121,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, setView }) => {
         
         <StatCard 
           title="Current Plan" 
-          value={stats?.planName || 'Free'} 
+          value={planDisplay} 
           icon={<StarIcon />} 
           color={theme.palette.warning.main}
           subtext={`Expires: ${stats?.expiryDate ? new Date(stats.expiryDate).toLocaleDateString() : 'Never'}`}
